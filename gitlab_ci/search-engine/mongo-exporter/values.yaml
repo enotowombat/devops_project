@@ -4,7 +4,7 @@ service:
   externalPort: 9001
 
 image:
-  repository: dockerhubname/mongodb_exporter
+  repository: dockerhubuser/mongodb_exporter
   tag: latest
 
 databaseHost:

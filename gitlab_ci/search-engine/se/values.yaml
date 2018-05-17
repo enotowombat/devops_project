@@ -1,11 +1,11 @@
 crawler:
   image:
-    repository: dockerhubname/se_crawler
+    repository: dockerhubuser/se_crawler
     tag: latest
 
 ui:
   image:
-    repository: dockerhubname/se_ui
+    repository: dockerhubuser/se_ui
     tag: latest
     service:
       externalPort: 8000

@@ -3,9 +3,7 @@ sudo: required
 dist: trusty
 
 language: python
-python:
-  - '2.7'
-  - '3.6'
+python: 3.6
 
 branches:
   only:
@@ -25,8 +23,7 @@ install:
   - sudo mv linux-amd64/helm /usr/bin/
   - /usr/bin/helm init --client-only
 
-  - pip install --upgrade pip && pip install -r ${WD}/gitlab_ci/ui/requirements.txt -r ${WD}/gitlab_ci/ui/requirements-test.txt \
-    -r ${WD}/gitlab_ci/crawler/requirements.txt -r ${WD}/gitlab_ci/crawler/requirements-test.txt
+  - pip install --upgrade pip && pip install -r ${WD}/gitlab_ci/ui/requirements.txt -r ${WD}/gitlab_ci/ui/requirements-test.txt -r ${WD}/gitlab_ci/crawler/requirements.txt -r ${WD}/gitlab_ci/crawler/requirements-test.txt
 
 before_script:
   - touch ~/.ssh/user.pub && touch ~/.ssh/user
@@ -35,7 +32,7 @@ script:
   - cd ${WD}/kubernetes/ansible
   - ansible-lint playbooks/create_cluster.yml
   - ansible-lint playbooks/delete_cluster.yml
-  - cd ${WD}/gitlab_ci
+  - cd ${WD}/gitlab_ci/search-engine
   - helm lint *
 
   - cd ${WD}/gitlab_ci/ui && python -m unittest discover -s tests/
