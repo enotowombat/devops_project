@@ -1,0 +1,40 @@
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "rabbit-exporter.fullname" . }}
+  labels:
+    app: se
+    component: rabbit-exporter
+    release: {{ .Release.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: se
+      component: rabbit-exporter
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      name: rabbit-exporter
+      labels:
+        app: se
+        component: rabbit-exporter
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        name: rabbit-exporter
+        ports:
+        - name: rabbit-exporter
+          containerPort: 9419
+          protocol: TCP
+        env:
+        - name: PUBLISH_PORT
+          value: {{ .Values.service.publishPort | default "9419" | quote }}
+        - name: RABBIT_CAPABILITIES
+          value: {{ .Values.service.rabbitCapabilities | default "bert,no_sort" | quote }}
+        - name: SKIPVERIFY
+          value: {{ .Values.service.skipVerify | default "true" | quote }}
+        - name: RABBIT_URL
+          value: {{ .Values.service.rabbitURL | default (printf "https://%s-rabbit-exporter:15672" .Release.Name) }}

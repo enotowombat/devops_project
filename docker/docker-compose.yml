@@ -1,0 +1,39 @@
+version: '3.3'
+services:
+  mongo:
+    image: mongo:${MONGO_VERSION}
+    volumes:
+      - mongo:/data/db
+    networks:
+      se:
+        aliases:
+          - mongo
+  rabbitmq:
+    image: rabbitmq:${RABBITMQ_VERSION}
+    networks:
+      se:
+        aliases: 
+          - rabbitmq
+  ui:
+    image: ${USER_NAME}/se_ui:${UI_VERSION}
+    depends_on:
+      - mongo
+    ports:
+      - ${UI_PORT}:8000/tcp
+    networks:
+      se:
+        aliases:
+          - ui
+  crawler:
+    image: ${USER_NAME}/se_crawler:${CRAWLER_VERSION}
+    depends_on:
+      - mongo
+      - rabbitmq
+    networks:
+      se:
+        aliases:
+          - crawler
+volumes:
+  mongo:
+networks:
+  se:

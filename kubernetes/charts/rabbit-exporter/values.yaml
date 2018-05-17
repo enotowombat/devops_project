@@ -1,0 +1,10 @@
+---
+service:
+  internalPort: 9419
+  externalPort: 9419
+  publishPort: 9419
+  rabbitCapabilities: bert,no_sort
+
+image:
+  repository: kbudde/rabbitmq-exporter
+  tag: latest

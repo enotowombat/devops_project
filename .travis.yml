@@ -1,0 +1,46 @@
+---
+sudo: required
+dist: trusty
+
+language: python
+python:
+  - '2.7'
+  - '3.6'
+
+branches:
+  only:
+    - master
+
+before_install:
+  - sudo apt-get update -qq
+  - WD=$(pwd)
+
+install:
+  - mkdir -p /home/travis/bin 
+  - sudo apt install -y wget
+  - pip install ansible
+  - pip install ansible-lint
+
+  - curl https://kubernetes-helm.storage.googleapis.com/helm-v2.8.2-linux-amd64.tar.gz | tar zx
+  - mv linux-amd64/helm /usr/bin/
+  - /usr/bin/helm init --client-only
+
+  - pip install --upgrade pip && pip install -r ${WD}/gitlab_ci/ui/requirements.txt -r ${WD}/gitlab_ci/ui/requirements-test.txt \
+    -r ${WD}/gitlab_ci/crawler/requirements.txt -r ${WD}/gitlab_ci/crawler/requirements-test.txt
+
+before_script:
+  - touch ~/.ssh/user.pub && touch ~/.ssh/user
+
+script:
+  - cd ${WD}/kubernetes/ansible
+  - ansible-lint playbooks/create_cluster.yml
+  - ansible-lint playbooks/delete_cluster.yml
+  - cd ${WD}/gitlab_ci
+  - helm lint *
+
+  - cd ${WD}/gitlab_ci/ui && python -m unittest discover -s tests/
+  - cd ${WD}/gitlab_ci/crawler && python -m unittest discover -s tests/
+  - cd ${WD}/gitlab_ci/ui && coverage run -m unittest discover -s tests/
+  - cd ${WD}/gitlab_ci/ui && coverage report --include ui/ui.py
+  - cd ${WD}/gitlab_ci/crawler && coverage run -m unittest discover -s tests/
+  - cd ${WD}/gitlab_ci/crawler && coverage report --include crawler/crawler.py

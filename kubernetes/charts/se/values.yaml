@@ -1,0 +1,11 @@
+crawler:
+  image:
+    repository: your_dockerhub_user/se_crawler
+    tag: latest
+
+ui:
+  image:
+    repository: your_dockerhub_user/se_ui
+    tag: latest
+    service:
+      externalPort: 8000

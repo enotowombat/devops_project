@@ -1,0 +1,6 @@
+gcp_project: testlab-201915
+cluster_name: cluster-1
+zone: europe-west1-b
+machine_type: n1-standard-1
+disk_size: 10
+num_nodes: 5

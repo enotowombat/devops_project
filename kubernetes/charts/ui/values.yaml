@@ -1,0 +1,14 @@
+---
+service:
+  internalPort: 8000
+  externalPort: 8000
+
+image:
+  repository: your_dockerhub_user/se_ui
+  tag: latest
+
+ingress:
+  class: nginx
+
+databaseHost:
+databasePort: 27017

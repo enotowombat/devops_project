@@ -1,0 +1,17 @@
+---
+service:
+  internalPort: 8000
+  externalPort: 8000
+
+image:
+  repository: dockerhubname/se_crawler
+  tag: latest
+
+databaseHost:
+databasePort: 27017
+RMQHost:
+RMQQueue: rabbit
+RMQUsername: guest
+RMQPassword: guest
+checkInterval: 60
+excludeURLS: .*github.com

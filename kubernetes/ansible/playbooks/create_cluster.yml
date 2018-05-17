@@ -1,0 +1,26 @@
+---
+- name: Create k8s cluster
+  hosts: localhost
+
+  tasks:
+
+    - name: Create cluster
+      shell: gcloud container --project "{{ gcp_project }}" clusters create "search-engine" \
+             --zone "{{ zone }}"
+             --no-enable-basic-auth \
+             --cluster-version "1.8.8-gke.0" \
+             --machine-type "{{ machine_type }}" \
+             --image-type "UBUNTU" \
+             --disk-size "{{ disk_size }}" \
+             --num-nodes "{{ num_nodes }}" \
+             --network "default" \
+             --no-enable-cloud-logging \
+             --no-enable-cloud-monitoring \
+             --subnetwork "default" \
+             --enable-legacy-authorization \
+             --addons HorizontalPodAutoscaling,HttpLoadBalancing
+      tags: skip_ansible_lint
+
+    - name: Set context
+      shell: gcloud container clusters get-credentials "search-engine" --zone "{{ zone }}" --project "{{ gcp_project }}"
+      tags: skip_ansible_lint

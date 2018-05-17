@@ -1,0 +1,18 @@
+build_info.txt
+
+## python specific
+*.pyc
+
+.env
+*.swp
+
+*.tfstate
+*.tfstate.*.backup
+*.tfstate.backup
+*.tfvars
+.terraform/
+
+tls.crt
+tls.key
+
+*.lock

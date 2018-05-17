@@ -1,0 +1,11 @@
+---
+service:
+  internalPort: 9001
+  externalPort: 9001
+
+image:
+  repository: your_dockerhub_user/mongodb_exporter
+  tag: latest
+
+databaseHost:
+
