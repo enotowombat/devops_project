@@ -48,14 +48,15 @@ Search Engine - поисковая машина для сбора текстов
 - Устанавливается Kibana
 
 Параметры создания k8s кластера задаются в `kubernetes/ansible/inventory/group_vars/all`:
-Variable|Default Value
--|-
-gcp_project | your_project
-cluster_name | cluster-1
-zone | europe-west1-b
-machine_type | n1-standard-1
-disk_size | 10
-num_nodes | 5
+
+| Variable | Default Value | Description |
+|:-:|:-:|:-:|
+| gcp_project | your_project | Название проекта | 
+| cluster_name | cluster-1 | Название k8s кластера |
+| zone | europe-west1-b | Зона для кластера |
+| machine_type | n1-standard-1 | Тип инстаса для нод кластера |
+| disk_size | 10 | Размер диска ноды, Gb |
+| num_nodes | 5 | Количество нод |
 
 Работоспособность проекта проверялась с параметрами по умолчанию
 ##### Важно: gcp_project должен быть изменен на свой
@@ -95,30 +96,26 @@ Docker Hub Password
 Gitlab CI Username
 Gitlab CI Password
 ```
-Будут инициализированы локальные копии Gitlab репозиториев приложений, commit и push приложений, сборка образа mongodb-exporter и push его в Docker Hub
-Запустятся пайплайны всех проектов
-Проверьте, что пайплайны отработали
+- Будут инициализированы локальные копии Gitlab репозиториев приложений, commit и push приложений, сборка образа mongodb-exporter и push его в Docker Hub
+- Запустятся пайплайны всех проектов
+- Проверьте, что пайплайны отработали
 
 #### Grafana Configration
 
-Зайдите на http://search-engine-grafana
-User/Password по умолчанию admin/admin
-После логина нужно:
-- сделать Add data source - > Type = Prometheus URL =  http://prom-prometheus-server
-- импортировать дашборды
-Дашборды находятся в [grafana dashboards](), их нужно импортировать в grafana: Import/Upload .json File
+- Зайдите на http://search-engine-grafana. User/Password по умолчанию admin/admin
+- Сделайте Add data source - > Type = Prometheus URL =  http://prom-prometheus-server
+- Импортируйте дашборды, Import/Upload .json File. Дашборды находятся в [grafana dashboards](https://github.com/enotowombat/devops_project/tree/master/grafana%20dashboards) 
 
 #### Alertmanager Configration
 
-Alermanager настраиватся в `kubernetes/charts/prometheus/custom_values.yml`
+- Alermanager настраиватся в `kubernetes/charts/prometheus/custom_values.yml`
 - Для оповещения в slack нужно создать web hook и добавить его url в параметр `slack_api_url`, название канала добавить в параметр `channel`
 - Правила для нотификаций настраиваются в секции `alerts`. По умолчанию настроено два правила, для контроля доступности API сервера и нод кластера: `APIServerDown` и `NodeUnavailable`
 
 #### Kibana Configration
 
-Зайдите на http://search-engine-kibana
-Создайте шаблон индекса 
-`Index name or pattern: fluentd-*`
+- Зайдите на http://search-engine-kibana
+- Создайте шаблон индекса. `Index name or pattern: fluentd-*`
 
 ## Working With Project
 
@@ -126,49 +123,54 @@ Alermanager настраиватся в `kubernetes/charts/prometheus/custom_val
 
 #### Components Pipeline (Crawler, UI)
 
-`Build`. Собирается Docker образ приложения, выкладывается в Docker Hub репозиторий
-`Test`. Выполняются тесты приложения
-`Release`. Проставляет версию релиза тегом docker образа, запускает пайплайн общего проекта - деплой на staging
-`Review`. По кнопке разворачивается временное окружение для ревью бранча (для master review отсутствует). URL всегда http://review - ограничение из-за отсутствия DNS. Удаляется тоже по нажатию кнопки
+- `Build`. Собирается Docker образ приложения, выкладывается в Docker Hub репозиторий
+- `Test`. Выполняются тесты приложения
+- `Release`. Проставляет версию релиза тегом docker образа, запускает пайплайн общего проекта - деплой на staging
+- `Review`. По кнопке разворачивается временное окружение для ревью бранча (для master review отсутствует). URL всегда http://review - ограничение из-за отсутствия DNS. Удаляется тоже по нажатию кнопки
 
 #### Search Engine Project Pipeline
 
-`Test`. Заглушка. Тесты проходят компоненты отдельно
-`Staging`. Деплой на Staging environment для прохождения ручного тестирования
-`Production`. Деплой в Production, выполняется нажатием кнопки по результатам проверки на Staging. В случае неудачного деплоя можно сделать Rollback релиза на предыдущую версию, выполняется по кнопке
+- `Test`. Заглушка. Тесты проходят компоненты отдельно
+- `Staging`. Деплой на Staging environment для прохождения ручного тестирования
+- `Production`. Деплой в Production, выполняется нажатием кнопки по результатам проверки на Staging. В случае неудачного деплоя можно сделать Rollback релиза на предыдущую версию, выполняется по кнопке
 
 Количество экземпляров приложений настраивается для каждого окружения в `gitlab_ci/search-engine/.gitlab-ci.yml`
 
-staging:
-Variable  Default Value
-UI_REPLICAS  1
-CRAWLER_REPLICAS  1
+`Staging`:
 
-production:
-Variable  Default Value
-UI_REPLICAS  2
-CRAWLER_REPLICAS  2
+| Variable | Default Value |
+|:-:|:-:|
+| UI_REPLICAS | 1 |
+| CRAWLER_REPLICAS | 1 |
+
+`Production`:
+
+| Variable | Default Value |
+|:-:|:-:|
+| UI_REPLICAS | 2 |
+| CRAWLER_REPLICAS | 2 |
 
 ### Monitoring
 
 #### Metrics
 
 ##### UI
-web_pages_served - количество обработанных запросов
-web_page_gen_time - время генерации веб-страниц, учитывая время обработки запроса
+- `web_pages_served` - количество обработанных запросов
+- `web_page_gen_time` - время генерации веб-страниц, учитывая время обработки запроса
 
 ##### Crawler
-crawler_pages_parsed - количество обработанных ботом страниц
-crawler_site_connection_time - время затраченное ботом на подключение к веб-сайту и загрузку веб-страницы
-crawler_page_parse_time - время затраченное ботом на обработку содержимого веб-страницы
+- `crawler_pages_parsed` - количество обработанных ботом страниц
+- `crawler_site_connection_time` - время затраченное ботом на подключение к веб-сайту и загрузку веб-страницы
+- `crawler_page_parse_time` - время затраченное ботом на обработку содержимого веб-страницы
 
 #### Prometheus 
 
-Exporters:
-`Mongodb exporter`
-`RabbitMQ exporter`
+##### Exporters:
+- `Mongodb exporter`
+- `RabbitMQ exporter`
 
-Targets:
+##### Targets:
+
 ```
 Kubernetes-apiservers
 Kubernetes-nodes
@@ -183,14 +185,14 @@ Prometheus
 
 #### Grafana
  
-Dashboards:
+#### Dashboards:
 
-#### UI_Monitoring
+##### UI_Monitoring
 Web page generation time 95th percentile
 Web page HTTP requests
 Rate of UI HTTP requests with error
 
-#### Crawler_Monitoring
+##### Crawler_Monitoring
 Crawler site connection time 95th percentile
 Crawler page parse time 95th percentile
 Crawler site connection HTTP requests
@@ -198,7 +200,7 @@ Crawler page parse requests
 Rate of crawler page parse requests with error
 Rate of crawler site connection requests with error
 
-#### Search_Engine_Business_Logic_Monitoring
+##### Search_Engine_Business_Logic_Monitoring
 Web pages served
 Crawler page parse requests
 
@@ -208,8 +210,8 @@ Network I/O pressure, Total usage, Pods CPU usage, System services CPU usage, Co
 
 ### Alerting
 
-Использутся Alermanager 
-Alermanager настраиватся в `kubernetes/charts/prometheus/custom_values.yml`
+- Использутся Alermanager 
+- Alermanager настраиватся в `kubernetes/charts/prometheus/custom_values.yml`
 - Для оповещения в slack нужно создать web hook и добавить его url в параметр `slack_api_url`, название канала добавить в параметр `channel`
 - Правила для нотификаций настраиваются в секции `alerts`. По умолчанию настроено два правила, для контроля доступности API сервера и нод кластера: `APIServerDown` и `NodeUnavailable`
 
