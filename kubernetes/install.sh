@@ -21,3 +21,5 @@ helm upgrade --install kibana stable/kibana \
 --version 0.1.1
 cd ../efk
 helm install --name  efk .
+helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator
+helm upgrade --install elasticsearch-curator incubator/elasticsearch-curator --set "config.elasticsearch.hosts={elasticsearch-logging}" -f charts/es-curator/values.yaml

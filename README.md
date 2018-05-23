@@ -37,7 +37,7 @@ Search Engine - поисковая машина для сбора текстов
 
 ## Get Started
 
-### Run `install.sh`
+Запустите `install.sh`. Скрипт выполняет следующее:
 - Создается k8s кластер
 - Инициализируется Helm
 - Устанавливается Gitlab-CI
@@ -46,6 +46,7 @@ Search Engine - поисковая машина для сбора текстов
 - Устанавливается Elasticsearch 
 - Устанавливается Fluentd
 - Устанавливается Kibana
+- Устанавливается Elasticsearch Curator Helm Chart
 
 Параметры создания k8s кластера задаются в `kubernetes/ansible/inventory/group_vars/all`:
 
@@ -188,21 +189,27 @@ Prometheus
 #### Dashboards:
 
 ##### UI_Monitoring
+```
 Web page generation time 95th percentile
 Web page HTTP requests
 Rate of UI HTTP requests with error
+```
 
 ##### Crawler_Monitoring
+```
 Crawler site connection time 95th percentile
 Crawler page parse time 95th percentile
 Crawler site connection HTTP requests
 Crawler page parse requests
 Rate of crawler page parse requests with error
 Rate of crawler site connection requests with error
+```
 
 ##### Search_Engine_Business_Logic_Monitoring
+```
 Web pages served
 Crawler page parse requests
+```
 
 #### Kubernetes cluster monitoring (via Prometheus)
 Network I/O pressure, Total usage, Pods CPU usage, System services CPU usage, Containers CPU usage, All processes CPU usage, Pods memory usage, System services memory usage, Containers memory usage, All processes memory usage, Pods network I/O, Containers network I/O, All processes network I/O
@@ -218,3 +225,6 @@ Network I/O pressure, Total usage, Pods CPU usage, System services CPU usage, Co
 ### Logging 
 
 Логи приложений можно найти поиском по `ui` и `crawler`. Fluentd парсит json логи приложений, передаваемые параметры можно смотреть отдельно.
+
+Время хранения индексов elasticsearch: 1 день
+Удаление старых индексов выполнятся крон джобом [Elasticsearch Curator Helm Chart](https://github.com/kubernetes/charts/tree/master/incubator/elasticsearch-curator)
